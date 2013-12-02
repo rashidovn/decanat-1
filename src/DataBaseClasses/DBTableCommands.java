@@ -4,7 +4,6 @@
  */
 package DataBaseClasses;
 
-import decanat.ReadEntryFromConsole;
 import decanat.Student;
 import static DataBaseClasses.DBconnection.getConn;
 import static DataBaseClasses.DBconnection.getiTimeout;
@@ -26,11 +25,11 @@ public class DBTableCommands extends DBconnection {
         String createString =
                 "create table IF NOT EXISTS "
                 + "students "
-                + "(id integer NOT NULL, "
-                + "last_name varchar(40) NOT NULL, "
-                + "first_name varchar(40) NOT NULL, "
-                + "group_number integer NOT NULL, "
-                + "gpa double NOT NULL, "
+                + "(id integer NOT NULL , "
+                + "LAST_NAME varchar(40) NOT NULL, "
+                + "FIRST_NAME varchar(40) NOT NULL, "
+                + "GROUP_NUMBER integer NOT NULL, "
+                + "GPA double NOT NULL, "
                 + "PRIMARY KEY (id)) ";
 
         Statement stmt = null;
@@ -45,34 +44,7 @@ public class DBTableCommands extends DBconnection {
         }
     }
 
-    public void insertRowData(Object obj) {
-        ReadEntryFromConsole refc = null;
-        PreparedStatement pstmt = null;
-        ResultSet rslt = null;
-        Student std = (Student) obj;
-        String insert = "INSERT INTO 'students'"
-                + "  ('id', 'last_name', 'first_name', 'group_number', 'gpa' ) VALUES (?, ?, ?, ?, ? )";
-        try {
-
-            getConn().prepareStatement(insert);
-            pstmt.setInt(1, std.getId());
-            pstmt.setString(2, std.getLastName());
-            pstmt.setString(3, std.getFirstName());
-            pstmt.setInt(3, std.getGroupNumber());
-            pstmt.setDouble(3, std.getGradePointAverage());
-            pstmt.executeUpdate();
-            rslt = pstmt.executeQuery();
-            while (rslt.next()) {
-                ;
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            close(pstmt);
-            close(rslt);
-        }
-    }
+    
 
     public static synchronized void insertDataToStudentsTable() {
 
@@ -82,7 +54,7 @@ public class DBTableCommands extends DBconnection {
             stmt.setQueryTimeout(getiTimeout());
             stmt.executeUpdate(
                     "insert into " + "students "
-                    + "values(1, "
+                    + "values("
                     + "'romaniuk', "
                     + "'roman', "
                     + "101, "
@@ -95,9 +67,65 @@ public class DBTableCommands extends DBconnection {
         }
     }
 
-    public static ArrayList<Student> getResultList() {
+    public static synchronized void insertDataToStudentsTable(ArrayList<Student> students) {
+        for (Student a : students) {
+            String sqlString = "";
+            PreparedStatement pstmt = null;
+            String insert = "INSERT INTO 'students' ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
+            try {
+                pstmt = getConn().prepareStatement(insert);
+                pstmt.setQueryTimeout(getiTimeout());
+                pstmt.setString(2, a.getLastName());
+                pstmt.setString(3, a.getFirstName());
+                pstmt.setInt(4, a.getGroupNumber());
+                pstmt.setDouble(5, a.getGradePointAverage());
+                pstmt.executeUpdate();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                close(pstmt);
+            }
 
-        ArrayList<Student> list = new ArrayList<>();
+        }
+
+    }
+
+    
+    public void insertRowData(Object obj) {
+        PreparedStatement pstmt = null;
+        ResultSet rslt = null;
+        Student std = (Student) obj;
+        String insert = "INSERT INTO 'students' ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ?, ? )";
+        try {
+
+            getConn().prepareStatement(insert);
+            pstmt.setString(2, std.getLastName());
+            pstmt.setString(3, std.getFirstName());
+            pstmt.setInt(3, std.getGroupNumber());
+            pstmt.setDouble(3, std.getGradePointAverage());
+            pstmt.executeUpdate();
+            rslt = pstmt.executeQuery();
+            while (rslt.next()) {
+                //----------Realization------------//
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            close(pstmt);
+            close(rslt);
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    public static ArrayList<Student> getResultListFromDB() {
+
+        ArrayList<Student> students = new ArrayList<>();
 
         Statement stmt = null;
         ResultSet rslt = null;
@@ -112,26 +140,23 @@ public class DBTableCommands extends DBconnection {
             while (rslt.next()) {
 
                 Student std = new Student();
-                //std.setId(,rslt.getInt("id"));
-                // std.setLastName(rslt.getString("last_name"));
-                // std.setFirstName(rslt.getString("first_name"));
+                std.setId(rslt.getInt("id"));
+                std.setLastName(rslt.getString("last_name"));
+                std.setFirstName(rslt.getString("first_name"));
                 std.setGroupNumber(rslt.getInt("group_number"));
-                //  std.setGradePointAverage(rslt.getDouble("gpa"));
+                std.setGradePointAverage(rslt.getDouble("gpa"));
 
-                list.add(std);
-                System.out.println(list);
+                students.add(std);
+                System.out.println(students);
             }
         } catch (SQLException ex) {
             Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-        try {
+        
             close(rslt);
-            stmt.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            close (stmt);
 
-        return list;
+            return students;
 
     }
 
