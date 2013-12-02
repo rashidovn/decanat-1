@@ -90,8 +90,8 @@ public class UserChoiceMenu {
                 case 5:
                     DBconnection.openConnection();
                     DBTableCommands.createTableStudents();
-                    DBTableCommands.insertDataToStudentsTable(Parser.getparsedArray());
-                    DBTableCommands.getResultListFromDB();
+                    DBTableCommands.insertDataToDB(Parser.getparsedArray());
+                    DBTableCommands.getDataFromDB();
                     //DBTableCommands.dropDB();
                     DBconnection.closeConnection();
                 case 6:

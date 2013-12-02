@@ -44,7 +44,7 @@ public class DBTableCommands extends DBconnection {
         }
     }
 
-    public static synchronized void insertDataToStudentsTable() {
+    public static synchronized void insertDataToDB() {
 
         Statement stmt = null;
         try {
@@ -65,7 +65,7 @@ public class DBTableCommands extends DBconnection {
         }
     }
 
-    public static synchronized void insertDataToStudentsTable(ArrayList<Student> students) {
+    public static synchronized void insertDataToDB(ArrayList<Student> students) {
         for (Student a : students) {
             PreparedStatement pstmt = null;
             String insert = "INSERT INTO 'students' ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
@@ -87,7 +87,7 @@ public class DBTableCommands extends DBconnection {
 
     }
 
-    public static ArrayList<Student> getResultListFromDB() {
+    public static ArrayList<Student> getDataFromDB() {
 
         ArrayList<Student> result = new ArrayList<>();
         
@@ -97,7 +97,7 @@ public class DBTableCommands extends DBconnection {
         try {
 
             String showBase = "select students.group_number from students "
-                    + "where students.group_number=3 ";
+                    + "where students.GROUP_NUMBER=3 ";
             stmt = getConn().createStatement();
             rslt = stmt.executeQuery(showBase);
 
