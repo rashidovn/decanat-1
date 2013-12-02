@@ -34,7 +34,7 @@ public class DBconnection {
         try {
             String user = "root";
             String password = "admin";
-            String url = "jdbc:sqlite:C:/Users/Roma/Documents/NetBeansProjects/db.db ";
+            String url = "jdbc:sqlite:C:/Documents and Settings/RARomanyuk/Мои документы/NetBeansProjects/decanatdb.db ";
             Class.forName("org.sqlite.JDBC");
             if (getConn() == null) {
                 setConn(DriverManager.getConnection(url, user, password));

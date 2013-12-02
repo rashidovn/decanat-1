@@ -73,17 +73,5 @@ public class Parser {
         parsedArray = aparsedArray;
     }
 
-    /**
-     * @return the parsedString
-     */
-    public static String getParsedToSqlString() {
-        return parsedToSqlString;
-    }
-
-    /**
-     * @param aParsedString the parsedString to set
-     */
-    public static void setParsedToSqlString(String aParsedToSqlString) {
-        parsedToSqlString = aParsedToSqlString;
-    }
+    
 }
