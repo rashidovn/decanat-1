@@ -7,6 +7,7 @@ package DataBaseClasses;
 import decanat.Student;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -14,10 +15,11 @@ import java.util.ArrayList;
  */
 public interface ActionMethods {
     
-     public void insertStudent(Student student) throws SQLException;  
+     public void insertStudent(Student student) throws SQLException;
+     public void insertStudent(ArrayList<Student> student) throws SQLException;
      public void updateStudent(Student student) throws SQLException;
      public Student getStudentById(Integer id) throws SQLException;    
-     public ArrayList getAllStudents() throws SQLException;              
+     public List getAllStudents() throws SQLException;              
      public void deleteStudent(Student student) throws SQLException;
 
     

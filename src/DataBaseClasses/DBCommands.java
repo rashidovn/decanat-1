@@ -4,19 +4,12 @@
  */
 package DataBaseClasses;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JOptionPane;
 import org.hibernate.Session;
-import util.HibernateUtil;
-import DAO.StudentDAO;
-
+import decanat.HibernateUtil;
 import decanat.Student;
 import static DataBaseClasses.DBconnection.getConn;
 import static DataBaseClasses.DBconnection.getiTimeout;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -48,7 +41,11 @@ public class DBCommands extends DBconnection implements ActionMethods {
         } catch (SQLException ex) {
             Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            close(stmt);
+            try {
+                stmt.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBCommands.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
@@ -73,7 +70,11 @@ public class DBCommands extends DBconnection implements ActionMethods {
         } catch (SQLException ex) {
             Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            close(stmt);
+            try {
+                stmt.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBCommands.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     //
@@ -81,26 +82,7 @@ public class DBCommands extends DBconnection implements ActionMethods {
     /**
      * manual insertion entry to a table "students" 
      */
-        public synchronized void insertDataToDB() {
-
-        Statement stmt = null;
-        try {
-            stmt = getConn().createStatement();
-            stmt.setQueryTimeout(getiTimeout());
-            stmt.executeUpdate(
-                    "insert into " + "students "
-                    + "values("
-                    + "'romaniuk', "
-                    + "'roman', "
-                    + "101, "
-                    + "4.89)");
-
-        } catch (SQLException ex) {
-            Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            close(stmt);
-        }
-    }
+    
 
     /**
      *
@@ -109,34 +91,22 @@ public class DBCommands extends DBconnection implements ActionMethods {
      */
     @Override
     public synchronized void insertStudent(Student student) throws SQLException {
-        @Override
+     Session session = null;
+             try {
+                 session = HibernateUtil.getSessionFactory().openSession();
+                 session.beginTransaction();
+                 session.save(student);
+                 session.getTransaction().commit();
+             } catch (Exception e) {
+                 System.out.println("Input/output error");
+             } finally {
+                 if (session != null && session.isOpen()) {
+                     session.close();
+                 }
+             } 
     }
         
-    /**
-     *another variant of inserting entry to DB with prepareStatement
-     * @param students takes data from console(ArrayList, generated in Parser class)
-     */
-        public synchronized void insertDataToDB(ArrayList<Student> students) {
-        for (Student a : students) {
-            PreparedStatement pstmt = null;
-            String insert = "INSERT INTO 'students' ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
-            try {
-                pstmt = getConn().prepareStatement(insert);
-                pstmt.setQueryTimeout(getiTimeout());
-                pstmt.setString(1, a.getLastName());
-                pstmt.setString(2, a.getFirstName());
-                pstmt.setInt(3, a.getGroupNumber());
-                pstmt.setDouble(4, a.getGradePointAverage());
-                pstmt.executeUpdate();
-            } catch (SQLException ex) {
-                Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                close(pstmt);
-            }
-
-        }
-
-    }
+   
 
     /**
      *
@@ -145,15 +115,15 @@ public class DBCommands extends DBconnection implements ActionMethods {
      * @throws SQLException
      */
     @Override
-    public void updateStudent(Student student) throws SQLException 
+    public synchronized void updateStudent(Student student) throws SQLException {
              Session session = null;
             try {
                 session = HibernateUtil.getSessionFactory().openSession();
                 session.beginTransaction();
-                session.update(stud);
+                session.update(student);
                 session.getTransaction().commit();
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e.getMessage(), "Ошибка I/O", JOptionPane.OK_OPTION);
+                System.out.println("Input/output error");
             } finally {
                 if (session != null && session.isOpen()) {
                     session.close();
@@ -171,125 +141,59 @@ public class DBCommands extends DBconnection implements ActionMethods {
      */
     @Override
     public void deleteStudent(Student student) throws SQLException {
-        PreparedStatement pstmt = null;
-        String insert = "INSERT INTO 'students' ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
-        try {
-            pstmt = getConn().prepareStatement(insert);
-            pstmt.setInt(1, student.getId());
-            pstmt.execute();
-        } finally {
-            close(pstmt);
-        }
-    }
-
-
-    /**
-     *
-     * @return 
-     * returns ArrayList of students from DB after SELECT request
-     */
-    @Override
-    public ArrayList getAllStudents() {
-
-        ArrayList<Student> result = new ArrayList<>();
-        Statement stmt = null;
-        ResultSet rslt = null;
-        Student std = new Student();
-        try {
-
-            String showBase = "SELECT ID, LAST_NAME, FIRST_NAME,GROUP_NUMBER,GPA FROM students "
-                    + "ORDER BY ID";
-            stmt = getConn().createStatement();
-            rslt = stmt.executeQuery(showBase);
-            
-            while (rslt.next()) {
-
-                std.setId(rslt.getInt("ID"));
-                std.setLastName(rslt.getString("LAST_NAME"));
-                std.setFirstName(rslt.getString("FIRST_NAME"));
-                std.setGroupNumber(rslt.getInt("GROUP_NUMBER"));
-                std.setGradePointAverage(rslt.getDouble("GPA"));
-
-                result.add(std);
+        Session session = null;
+            try {
+                session = HibernateUtil.getSessionFactory().openSession();
+                session.beginTransaction();
+                session.delete(student);
+                session.getTransaction().commit();
+            } catch (Exception e) {
+               System.out.println("Input/output error");
+            } finally {
+                if (session != null && session.isOpen()) {
+                    session.close();
+                }
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        close(rslt);
-        close(stmt);
+      }  
 
-        return result;
+    
+    @Override
+    public List getAllStudents() {
+
+       Session session = null;
+            List<Student> students = new ArrayList<Student>();
+            try {
+                session = HibernateUtil.getSessionFactory().openSession();
+                students = session.createCriteria(Student.class).list();
+            } catch (Exception e) {
+                System.out.println("Input/output error");
+            } finally {
+                if (session != null && session.isOpen()) {
+                    session.close();
+                }
+            }
+           
+        return students;
 
     }
 
     @Override
     public Student getStudentById(Integer id) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    
-    
-    
-    /**
-     *drops DB
-     */
-    public static synchronized void dropDB() {
-        Statement stmt = null;
-        try {
-            stmt = getConn().createStatement();
-
-            String sDropTable = "DROP TABLE 'students'";
-            stmt.executeUpdate(sDropTable);
-
-        } catch (SQLException ex) {
-            Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            close(stmt);
-        }
-
-    }
-
-    /**
-     *
-     * @param stmt
-     */
-    public static synchronized void close(Statement stmt) {
-        try {
-            if (stmt != null) {
-                stmt.close();
+        Session session = null;
+            Student student = null;
+            try {
+                session = HibernateUtil.getSessionFactory().openSession();
+                student = (Student) session.load(Student.class, id);
+            } catch (Exception e) {
+                System.out.println("Input/output error");
+            } finally {
+                if (session != null && session.isOpen()) {
+                    session.close();
+                }
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+            return student;
 
-    /**
-     *
-     * @param pstmt
-     */
-    public static synchronized void close(PreparedStatement pstmt) {
-        try {
-            if (pstmt != null) {
-                pstmt.close();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
-
-    /**
-     *
-     * @param rslt
-     */
-    public static synchronized void close(ResultSet rslt) {
-        try {
-            if (rslt != null) {
-                rslt.close();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
+    
     
 }
