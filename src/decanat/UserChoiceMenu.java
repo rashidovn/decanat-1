@@ -6,13 +6,14 @@ package decanat;
 
 import ComparatorClasses.ListSort;
 import DataBaseClasses.DBconnection;
-import DataBaseClasses.DBTableCommands;
+import DataBaseClasses.DBCommands;
 import DataInputOutputClasses.DataIOSerialization;
 import ParserClasses.Parser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -21,10 +22,12 @@ import java.util.Scanner;
  */
 public class UserChoiceMenu {
 
-    
+    private Student student = new  Student();
     private ListSort listSort = new ListSort();
     private DataIOSerialization dataIO = new DataIOSerialization();
-    Parser  readConsole = new Parser();
+    private Parser  readConsole = new Parser();
+    private DBCommands dbCommands = new DBCommands();
+    
 
     public UserChoiceMenu() {
     }
@@ -89,11 +92,11 @@ public class UserChoiceMenu {
                     break;
                 case 5:
                     DBconnection.openConnection();
-                    DBTableCommands.createDB();
-                    DBTableCommands.createTableStudents();
-                    DBTableCommands.insertDataToDB(Parser.getparsedArray());
-                    DBTableCommands.getDataFromDB();
-                    DBTableCommands.dropDB();
+                    //DBTableCommands.createDB();
+                    dbCommands.createTableStudents();
+                    dbCommands.insertDataToDB(Parser.getparsedArray());
+                    showLisFromDB();
+                    dbCommands.dropDB();
                     DBconnection.closeConnection();
                 case 6:
                     System.out.println("Bye-bye");
@@ -116,7 +119,12 @@ public class UserChoiceMenu {
     public void setListSort(ListSort listSort) {
         this.listSort = listSort;
     }
-
+    public void showLisFromDB() {
+        ArrayList result = dbCommands.getDataFromDB();
+        for (Object r: result)
+            System.out.println(r);
+        
+    }
     /**
      * @return the dataIO
      */
@@ -130,4 +138,11 @@ public class UserChoiceMenu {
     public void setDataIO(DataIOSerialization dataIO) {
         this.dataIO = dataIO;
     }
+    
+    @Override
+    public String toString() {
+        return " ID: " + student.getId() + ", LastName: " + student.getLastName() + ", first name: " + student.getFirstName() + ", Group: " + student.getGroupNumber() + ", GPA= " + String.format("%4.2f", student.getGradePointAverage());
+    }
+    
+    
 }
