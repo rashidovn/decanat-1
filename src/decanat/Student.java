@@ -1,17 +1,26 @@
 package decanat;
 
 import java.io.Serializable;
+import org.hibernate.mapping.Column;
+import org.hibernate.mapping.Table;
+
+import org.hibernate.*;
+
 
 public class Student implements Serializable {
-
+    
+    
     private String lastName = "";
-    private String firstName = "";
-    private static int nextId = 1;
-    private int id = 0;
-    private int groupNumber = 0;
-    private double gradePointAverage = 0;
 
-    public Student(int id, String lastName, String firstName, int groupNumber, double gradePointAverage) {
+   
+    private String firstName = "";
+    private static Integer nextId = 1;
+    
+    private Integer id = 0;
+    private Integer groupNumber = 0;
+    private Double gradePointAverage = 0.0;
+
+    public Student(Integer id, String lastName, String firstName, Integer groupNumber, Double gradePointAverage) {
         this.id = id;
         this.lastName = lastName;
         this.firstName = firstName;
@@ -21,24 +30,25 @@ public class Student implements Serializable {
 
     public Student() {
     }
-
-    public int getId() {
+    @id
+    @Column(name = "ID")
+    public Integer getId() {
         return id;
     }
-
+    @Column(name = "LAST_NAME")
     public String getLastName() {
         return lastName;
     }
-
+     @Column(name = "FIRST_NAME")
     public String getFirstName() {
         return firstName;
     }
-
-    public int getGroupNumber() {
+     @Column(name = "GROUP_NUMBER")
+    public Integer getGroupNumber() {
         return groupNumber;
     }
-
-    public double getGradePointAverage() {
+     @Column(name = "GPA")
+    public Double getGradePointAverage() {
         return gradePointAverage;
     }
 
@@ -52,7 +62,7 @@ public class Student implements Serializable {
         setNextId(getNextId() + 1);
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -64,25 +74,79 @@ public class Student implements Serializable {
         this.firstName = firstName;
     }
 
-    public void setGroupNumber(int groupNumber) {
+    public void setGroupNumber(Integer groupNumber) {
         this.groupNumber = groupNumber;
     }
 
-    public void setGradePointAverage(double gradePointAverage) {
+    public void setGradePointAverage(Double gradePointAverage) {
         this.gradePointAverage = gradePointAverage;
     }
 
     /**
      * @return the nextId
      */
-    public static int getNextId() {
+    public static Integer getNextId() {
         return nextId;
     }
 
     /**
      * @param aNextId the nextId to set
      */
-    public static void setNextId(int aNextId) {
+    public static void setNextId(Integer aNextId) {
         nextId = aNextId;
     }
+
+
+@Override
+
+    public int hashCode() {
+
+        int hash = 0;
+
+        hash += (id != null ? id.hashCode() : 0);
+
+        return hash;
+
+    }
+
+ 
+
+    @Override
+
+    public boolean equals(Object object) {
+
+        // TODO: Warning - this method won't work in the case the id fields are not set
+
+        if (!(object instanceof Student)) {
+
+            return false;
+
+        }
+
+        Student other = (Student) object;
+
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
