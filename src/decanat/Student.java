@@ -1,12 +1,12 @@
 package decanat;
 
 import java.io.Serializable;
-import org.hibernate.mapping.Column;
-import org.hibernate.mapping.Table;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import org.hibernate.*;
 
-
+@Table(name ="students")
 public class Student implements Serializable {
     
     
@@ -30,7 +30,7 @@ public class Student implements Serializable {
 
     public Student() {
     }
-    @id
+    @Id
     @Column(name = "ID")
     public Integer getId() {
         return id;

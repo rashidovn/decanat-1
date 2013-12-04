@@ -5,16 +5,18 @@
 package decanat;
 
 import ComparatorClasses.ListSort;
-import DataBaseClasses.DBconnection;
-import DataBaseClasses.DBCommands;
+import DataBaseClasses.Factory;
 import DataInputOutputClasses.DataIOSerialization;
 import ParserClasses.Parser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -25,8 +27,7 @@ public class UserChoiceMenu {
     private Student student = new  Student();
     private ListSort listSort = new ListSort();
     private DataIOSerialization dataIO = new DataIOSerialization();
-    private Parser  readConsole = new Parser();
-    private DBCommands dbCommands = new DBCommands();
+    
     
 
     public UserChoiceMenu() {
@@ -91,13 +92,13 @@ public class UserChoiceMenu {
                     getDataIO().showDataFromFile(new File("data.dat"));
                     break;
                 case 5:
-                    DBconnection.openConnection();
-                    //DBTableCommands.createDB();
-                    dbCommands.createTableStudents();
-                    dbCommands.insertDataToDB(Parser.getparsedArray());
-                    showLisFromDB();
-                    dbCommands.dropDB();
-                    DBconnection.closeConnection();
+                    try {
+                        Factory.getInstance().getActionMethods().insertStudent(Parser.getparsedArray());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(UserChoiceMenu.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    showListFromDB();
+                
                 case 6:
                     System.out.println("Bye-bye");
                 default:
@@ -119,8 +120,13 @@ public class UserChoiceMenu {
     public void setListSort(ListSort listSort) {
         this.listSort = listSort;
     }
-    public void showLisFromDB() {
-        ArrayList result = dbCommands.getDataFromDB();
+    public void showListFromDB() {
+        List result = null;
+        try {
+            result = Factory.getInstance().getActionMethods().getAllStudents();
+        } catch (SQLException ex) {
+            Logger.getLogger(UserChoiceMenu.class.getName()).log(Level.SEVERE, null, ex);
+        }
         for (Object r: result)
             System.out.println(r);
         
