@@ -4,7 +4,6 @@
  */
 package DataBaseClasses;
 
-import decanat.ReadEntryFromConsole;
 import decanat.Student;
 import static DataBaseClasses.DBconnection.getConn;
 import static DataBaseClasses.DBconnection.getiTimeout;
@@ -23,15 +22,15 @@ import java.util.logging.Logger;
 public class DBTableCommands extends DBconnection {
 
     public static synchronized void createTableStudents() {
-        String createString =
-                "create table IF NOT EXISTS "
+        String createString
+                = "create table IF NOT EXISTS "
                 + "students "
-                + "(id integer NOT NULL, "
-                + "last_name varchar(40) NOT NULL, "
-                + "first_name varchar(40) NOT NULL, "
-                + "group_number integer NOT NULL, "
-                + "gpa double NOT NULL, "
-                + "PRIMARY KEY (id)) ";
+                + "(ID integer NOT NULL , "
+                + "LAST_NAME varchar(40) NOT NULL, "
+                + "FIRST_NAME varchar(40) NOT NULL, "
+                + "GROUP_NUMBER integer NOT NULL, "
+                + "GPA double NOT NULL, "
+                + "PRIMARY KEY (ID)) ";
 
         Statement stmt = null;
         try {
@@ -45,36 +44,7 @@ public class DBTableCommands extends DBconnection {
         }
     }
 
-    public void insertRowData(Object obj) {
-        ReadEntryFromConsole refc = null;
-        PreparedStatement pstmt = null;
-        ResultSet rslt = null;
-        Student std = (Student) obj;
-        String insert = "INSERT INTO 'students'"
-                + "  ('id', 'last_name', 'first_name', 'group_number', 'gpa' ) VALUES (?, ?, ?, ?, ? )";
-        try {
-
-            getConn().prepareStatement(insert);
-            pstmt.setInt(1, std.getId());
-            pstmt.setString(2, std.getLastName());
-            pstmt.setString(3, std.getFirstName());
-            pstmt.setInt(3, std.getGroupNumber());
-            pstmt.setDouble(3, std.getGradePointAverage());
-            pstmt.executeUpdate();
-            rslt = pstmt.executeQuery();
-            while (rslt.next()) {
-                ;
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            close(pstmt);
-            close(rslt);
-        }
-    }
-
-    public static synchronized void insertDataToStudentsTable() {
+    public static synchronized void insertDataToDB() {
 
         Statement stmt = null;
         try {
@@ -82,7 +52,7 @@ public class DBTableCommands extends DBconnection {
             stmt.setQueryTimeout(getiTimeout());
             stmt.executeUpdate(
                     "insert into " + "students "
-                    + "values(1, "
+                    + "values("
                     + "'romaniuk', "
                     + "'roman', "
                     + "101, "
@@ -95,43 +65,62 @@ public class DBTableCommands extends DBconnection {
         }
     }
 
-    public static ArrayList<Student> getResultList() {
+    public static synchronized void insertDataToDB(ArrayList<Student> students) {
+        for (Student a : students) {
+            PreparedStatement pstmt = null;
+            String insert = "INSERT INTO 'students' ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
+            try {
+                pstmt = getConn().prepareStatement(insert);
+                pstmt.setQueryTimeout(getiTimeout());
+                pstmt.setString(1, a.getLastName());
+                pstmt.setString(2, a.getFirstName());
+                pstmt.setInt(3, a.getGroupNumber());
+                pstmt.setDouble(4, a.getGradePointAverage());
+                pstmt.executeUpdate();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                close(pstmt);
+            }
 
-        ArrayList<Student> list = new ArrayList<>();
+        }
 
+    }
+
+    public static ArrayList<Student> getDataFromDB() {
+
+        ArrayList<Student> result = new ArrayList<>();
+        
         Statement stmt = null;
         ResultSet rslt = null;
 
         try {
 
             String showBase = "select students.group_number from students "
-                    + "where students.group_number=101 ";
+                    + "where students.GROUP_NUMBER=3 ";
             stmt = getConn().createStatement();
             rslt = stmt.executeQuery(showBase);
 
             while (rslt.next()) {
 
                 Student std = new Student();
-                //std.setId(,rslt.getInt("id"));
-                // std.setLastName(rslt.getString("last_name"));
-                // std.setFirstName(rslt.getString("first_name"));
-                std.setGroupNumber(rslt.getInt("group_number"));
-                //  std.setGradePointAverage(rslt.getDouble("gpa"));
+                std.setId(rslt.getInt("ID"));
+                std.setLastName(rslt.getString("LAST_NAME"));
+                std.setFirstName(rslt.getString("FIRST_NAME"));
+                std.setGroupNumber(rslt.getInt("GROUP_NUMBER"));
+                std.setGradePointAverage(rslt.getDouble("GPA"));
 
-                list.add(std);
-                System.out.println(list);
+                result.add(std);
+                
             }
         } catch (SQLException ex) {
             Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-        try {
-            close(rslt);
-            stmt.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        System.out.println(result);
+        close(rslt);
+        close(stmt);
 
-        return list;
+        return result;
 
     }
 
