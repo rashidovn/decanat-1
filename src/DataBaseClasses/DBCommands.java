@@ -4,6 +4,14 @@
  */
 package DataBaseClasses;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
+import org.hibernate.Session;
+import util.HibernateUtil;
+import DAO.StudentDAO;
+
 import decanat.Student;
 import static DataBaseClasses.DBconnection.getConn;
 import static DataBaseClasses.DBconnection.getiTimeout;
@@ -19,7 +27,7 @@ import java.util.logging.Logger;
  *
  * @author Roma
  */
-public class DBCommands extends DBconnection {
+public class DBCommands extends DBconnection implements ActionMethods {
 
     // creates DB
 
@@ -99,29 +107,16 @@ public class DBCommands extends DBconnection {
      * @param student
      * @throws SQLException
      */
+    @Override
     public synchronized void insertStudent(Student student) throws SQLException {
-        PreparedStatement pstmt = null;
-        String insert = "INSERT INTO 'students' ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
-          try {
-                pstmt = getConn().prepareStatement(insert);
-                pstmt.setQueryTimeout(getiTimeout());
-                pstmt.setString(1, student.getLastName());
-                pstmt.setString(2, student.getFirstName());
-                pstmt.setInt(3, student.getGroupNumber());
-                pstmt.setDouble(4, student.getGradePointAverage());
-                pstmt.executeUpdate();
-            } catch (SQLException ex) {
-                Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                close(pstmt);
-            }
+        @Override
     }
         
     /**
      *another variant of inserting entry to DB with prepareStatement
      * @param students takes data from console(ArrayList, generated in Parser class)
      */
-    public synchronized void insertDataToDB(ArrayList<Student> students) {
+        public synchronized void insertDataToDB(ArrayList<Student> students) {
         for (Student a : students) {
             PreparedStatement pstmt = null;
             String insert = "INSERT INTO 'students' ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
@@ -149,22 +144,23 @@ public class DBCommands extends DBconnection {
      * updates student's data
      * @throws SQLException
      */
-    public void updateStudent(Student student) throws SQLException {
-        PreparedStatement pstmt = null;
-        String insert = "INSERT INTO 'students' SET ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
-        try {
-                pstmt = getConn().prepareStatement(insert);
-                pstmt.setQueryTimeout(getiTimeout());
-                pstmt.setString(1, student.getLastName());
-                pstmt.setString(2, student.getFirstName());
-                pstmt.setInt(3, student.getGroupNumber());
-                pstmt.setDouble(4, student.getGradePointAverage());
-                pstmt.executeUpdate();
-            } catch (SQLException ex) {
-                Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
+    @Override
+    public void updateStudent(Student student) throws SQLException 
+             Session session = null;
+            try {
+                session = HibernateUtil.getSessionFactory().openSession();
+                session.beginTransaction();
+                session.update(stud);
+                session.getTransaction().commit();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e.getMessage(), "Ошибка I/O", JOptionPane.OK_OPTION);
             } finally {
-                close(pstmt);
+                if (session != null && session.isOpen()) {
+                    session.close();
+                }
             }
+     
+
     }
 
     /**
@@ -173,6 +169,7 @@ public class DBCommands extends DBconnection {
      * from DB
      * @throws SQLException
      */
+    @Override
     public void deleteStudent(Student student) throws SQLException {
         PreparedStatement pstmt = null;
         String insert = "INSERT INTO 'students' ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
@@ -191,7 +188,8 @@ public class DBCommands extends DBconnection {
      * @return 
      * returns ArrayList of students from DB after SELECT request
      */
-    public ArrayList getDataFromDB() {
+    @Override
+    public ArrayList getAllStudents() {
 
         ArrayList<Student> result = new ArrayList<>();
         Statement stmt = null;
@@ -224,7 +222,10 @@ public class DBCommands extends DBconnection {
 
     }
 
-    
+    @Override
+    public Student getStudentById(Integer id) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     
     
@@ -289,4 +290,6 @@ public class DBCommands extends DBconnection {
             Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    
 }
