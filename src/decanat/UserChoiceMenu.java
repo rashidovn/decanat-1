@@ -22,11 +22,11 @@ import java.util.Scanner;
  */
 public class UserChoiceMenu {
 
-    private Student student = new  Student();
+    private final Student student = new  Student();
     private ListSort listSort = new ListSort();
     private DataIOSerialization dataIO = new DataIOSerialization();
-    private Parser  readConsole = new Parser();
-    private DBCommands dbCommands = new DBCommands();
+    private final Parser  readConsole = new Parser();
+    private final DBCommands dbCommands = new DBCommands();
     
 
     public UserChoiceMenu() {
@@ -96,7 +96,7 @@ public class UserChoiceMenu {
                     dbCommands.createTableStudents();
                     dbCommands.insertDataToDB(Parser.getparsedArray());
                     showLisFromDB();
-                    dbCommands.dropDB();
+                    DBCommands.dropDB();
                     DBconnection.closeConnection();
                 case 6:
                     System.out.println("Bye-bye");

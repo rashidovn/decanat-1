@@ -49,7 +49,7 @@ public class DBCommands extends DBconnection {
         String createString
                 = "create table IF NOT EXISTS "
                 + "'students' "
-                + "(ID integer NOT NULL , "
+                + "(ID integer NOT NULL, "
                 + "LAST_NAME varchar(40) NOT NULL, "
                 + "FIRST_NAME varchar(40) NOT NULL, "
                 + "GROUP_NUMBER integer NOT NULL, "
