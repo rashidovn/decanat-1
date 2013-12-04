@@ -21,16 +21,16 @@ import java.util.logging.Logger;
  */
 public class DBTableCommands extends DBconnection {
 
-    public static synchronized void createTableStudents() {
+    // creates DB
+
+    /**
+     *
+     */
+    public static synchronized void createDB() {
         String createString
-                = "create table IF NOT EXISTS "
-                + "students "
-                + "(ID integer NOT NULL , "
-                + "LAST_NAME varchar(40) NOT NULL, "
-                + "FIRST_NAME varchar(40) NOT NULL, "
-                + "GROUP_NUMBER integer NOT NULL, "
-                + "GPA double NOT NULL, "
-                + "PRIMARY KEY (ID)) ";
+                = "DROP DATABASE IF EXISTS db"
+                +" CREATE DATABASE db ";
+        
 
         Statement stmt = null;
         try {
@@ -43,8 +43,37 @@ public class DBTableCommands extends DBconnection {
             close(stmt);
         }
     }
+    
+    // creates table students
+        public static synchronized void createTableStudents() {
+        String createString
+                = "create table IF NOT EXISTS "
+                + "'students' "
+                + "(ID integer NOT NULL , "
+                + "LAST_NAME varchar(40) NOT NULL, "
+                + "FIRST_NAME varchar(40) NOT NULL, "
+                + "GROUP_NUMBER integer NOT NULL, "
+                + "GPA double NOT NULL, "
+                + "PRIMARY KEY (ID)) ";
+        
 
-    public static synchronized void insertDataToDB() {
+        Statement stmt = null;
+        try {
+            stmt = getConn().createStatement();
+            stmt.setQueryTimeout(getiTimeout());
+            stmt.executeUpdate(createString);
+        } catch (SQLException ex) {
+            Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            close(stmt);
+        }
+    }
+    //
+
+    /**
+     * manual insertion entry to a table "students" 
+     */
+        public static synchronized void insertDataToDB() {
 
         Statement stmt = null;
         try {
@@ -65,6 +94,33 @@ public class DBTableCommands extends DBconnection {
         }
     }
 
+    /**
+     *
+     * @param student
+     * @throws SQLException
+     */
+    public static synchronized void insertStudent(Student student) throws SQLException {
+        PreparedStatement pstmt = null;
+        String insert = "INSERT INTO 'students' ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
+          try {
+                pstmt = getConn().prepareStatement(insert);
+                pstmt.setQueryTimeout(getiTimeout());
+                pstmt.setString(1, student.getLastName());
+                pstmt.setString(2, student.getFirstName());
+                pstmt.setInt(3, student.getGroupNumber());
+                pstmt.setDouble(4, student.getGradePointAverage());
+                pstmt.executeUpdate();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                close(pstmt);
+            }
+    }
+        
+    /**
+     *another variant of inserting entry to DB with prepareStatement
+     * @param students takes data from console(ArrayList, generated in Parser class)
+     */
     public static synchronized void insertDataToDB(ArrayList<Student> students) {
         for (Student a : students) {
             PreparedStatement pstmt = null;
@@ -87,23 +143,69 @@ public class DBTableCommands extends DBconnection {
 
     }
 
+    /**
+     *
+     * @param student
+     * updates student's data
+     * @throws SQLException
+     */
+    public static void updateStudent(Student student) throws SQLException {
+        PreparedStatement pstmt = null;
+        String insert = "INSERT INTO 'students' SET ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
+        try {
+                pstmt = getConn().prepareStatement(insert);
+                pstmt.setQueryTimeout(getiTimeout());
+                pstmt.setString(1, student.getLastName());
+                pstmt.setString(2, student.getFirstName());
+                pstmt.setInt(3, student.getGroupNumber());
+                pstmt.setDouble(4, student.getGradePointAverage());
+                pstmt.executeUpdate();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                close(pstmt);
+            }
+    }
+
+    /**
+     *delete
+     * @param student
+     * from DB
+     * @throws SQLException
+     */
+    public static void deleteStudent(Student student) throws SQLException {
+        PreparedStatement pstmt = null;
+        String insert = "INSERT INTO 'students' ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
+        try {
+            pstmt = getConn().prepareStatement(insert);
+            pstmt.setInt(1, student.getId());
+            pstmt.execute();
+        } finally {
+            close(pstmt);
+        }
+    }
+
+
+    /**
+     *
+     * @return 
+     * returns ArrayList of students from DB after SELECT request
+     */
     public static ArrayList<Student> getDataFromDB() {
 
         ArrayList<Student> result = new ArrayList<>();
-        
         Statement stmt = null;
         ResultSet rslt = null;
-
+        Student std = new Student();
         try {
 
-            String showBase = "select students.group_number from students "
-                    + "where students.GROUP_NUMBER=3 ";
+            String showBase = "SELECT ID, LAST_NAME, FIRST_NAME,GROUP_NUMBER,GPA FROM students "
+                    + "ORDER BY ID";
             stmt = getConn().createStatement();
             rslt = stmt.executeQuery(showBase);
-
+            
             while (rslt.next()) {
 
-                Student std = new Student();
                 std.setId(rslt.getInt("ID"));
                 std.setLastName(rslt.getString("LAST_NAME"));
                 std.setFirstName(rslt.getString("FIRST_NAME"));
@@ -111,7 +213,6 @@ public class DBTableCommands extends DBconnection {
                 std.setGradePointAverage(rslt.getDouble("GPA"));
 
                 result.add(std);
-                
             }
         } catch (SQLException ex) {
             Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -124,6 +225,14 @@ public class DBTableCommands extends DBconnection {
 
     }
 
+    
+    
+    
+    
+    
+    /**
+     *drops DB
+     */
     public static synchronized void dropDB() {
         Statement stmt = null;
         try {
@@ -140,6 +249,10 @@ public class DBTableCommands extends DBconnection {
 
     }
 
+    /**
+     *
+     * @param stmt
+     */
     public static synchronized void close(Statement stmt) {
         try {
             if (stmt != null) {
@@ -150,6 +263,10 @@ public class DBTableCommands extends DBconnection {
         }
     }
 
+    /**
+     *
+     * @param pstmt
+     */
     public static synchronized void close(PreparedStatement pstmt) {
         try {
             if (pstmt != null) {
@@ -160,6 +277,10 @@ public class DBTableCommands extends DBconnection {
         }
     }
 
+    /**
+     *
+     * @param rslt
+     */
     public static synchronized void close(ResultSet rslt) {
         try {
             if (rslt != null) {

@@ -89,10 +89,11 @@ public class UserChoiceMenu {
                     break;
                 case 5:
                     DBconnection.openConnection();
+                    DBTableCommands.createDB();
                     DBTableCommands.createTableStudents();
                     DBTableCommands.insertDataToDB(Parser.getparsedArray());
                     DBTableCommands.getDataFromDB();
-                    //DBTableCommands.dropDB();
+                    DBTableCommands.dropDB();
                     DBconnection.closeConnection();
                 case 6:
                     System.out.println("Bye-bye");

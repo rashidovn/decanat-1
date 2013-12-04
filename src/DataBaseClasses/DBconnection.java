@@ -21,15 +21,14 @@ public class DBconnection {
     private static DBconnection db = null;
     //public static String url = "C:/Users/Roma/Documents/NetBeansProjects/db.db";
 
-    public static synchronized DBconnection getUniqueInstance() {
-        if (getDb() == null) {
-            setDb(new DBconnection());
-            return getDb();
-        } else {
-            return getDb();
+    
+    public static synchronized DBconnection getInstance() throws Exception {
+        if (db == null) {
+            db = new DBconnection();
         }
+        return db;
     }
-
+    
     public static synchronized void openConnection() {
         try {
             String user = "root";
