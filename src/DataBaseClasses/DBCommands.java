@@ -7,11 +7,13 @@ package DataBaseClasses;
 import decanat.Student;
 import static DataBaseClasses.DBconnection.getConn;
 import static DataBaseClasses.DBconnection.getiTimeout;
+import decanat.StudentActions;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +21,7 @@ import java.util.logging.Logger;
  *
  * @author Roma
  */
-public class DBCommands extends DBconnection {
+public class DBCommands extends DBconnection implements  StudentActions {
 
     // creates DB
 
@@ -99,6 +101,7 @@ public class DBCommands extends DBconnection {
      * @param student
      * @throws SQLException
      */
+    @Override
     public synchronized void insertStudent(Student student) throws SQLException {
         PreparedStatement pstmt = null;
         String insert = "INSERT INTO 'students' ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
@@ -149,6 +152,7 @@ public class DBCommands extends DBconnection {
      * updates student's data
      * @throws SQLException
      */
+    @Override
     public void updateStudent(Student student) throws SQLException {
         PreparedStatement pstmt = null;
         String insert = "INSERT INTO 'students' SET ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
@@ -173,6 +177,7 @@ public class DBCommands extends DBconnection {
      * from DB
      * @throws SQLException
      */
+    @Override
     public void deleteStudent(Student student) throws SQLException {
         PreparedStatement pstmt = null;
         String insert = "INSERT INTO 'students' ('LAST_NAME', 'FIRST_NAME', 'GROUP_NUMBER', 'GPA' ) VALUES (?, ?, ?, ? )";
@@ -288,5 +293,10 @@ public class DBCommands extends DBconnection {
         } catch (SQLException ex) {
             Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @Override
+    public Collection getAllStudents() throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

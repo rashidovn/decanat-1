@@ -1,32 +1,45 @@
 package decanat;
 
 import java.io.Serializable;
-import org.hibernate.mapping.Column;
-
-
-import org.hibernate.annotations.Table;
-import org.hibernate.annotations.Entity;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name="student")
+@Table(name = "student")
 public class Student implements Serializable {
-    @id
+
+    @Id
+    @GeneratedValue(generator="increment")
+    @GenericGenerator(name="increment", strategy = "increment")
     @Column(name = "ID")
     private Integer id = 0;
-    
+
     @Column(name = "LAST_NAME")
     private String lastName = "";
 
-   @Column(name = "FIRST_NAME")
+    @Column(name = "FIRST_NAME")
     private String firstName = "";
-    
-   @Column(name = "GROUP_NUMBER")
+
+    @Column(name = "GROUP_NUMBER")
     private Integer groupNumber = 0;
-   
-    private Double gradePointAverage = 0.0;
+
     @Column(name = "GPA")
-    
+    private Double gradePointAverage = 0.0;
+
     private static Integer nextId = 1;
+
     public Student(Integer id, String lastName, String firstName, Integer groupNumber, Double gradePointAverage) {
         this.id = id;
         this.lastName = lastName;
@@ -37,23 +50,23 @@ public class Student implements Serializable {
 
     public Student() {
     }
-    
+
     public Integer getId() {
         return id;
     }
-    
+
     public String getLastName() {
         return lastName;
     }
-     
+
     public String getFirstName() {
         return firstName;
     }
-    
+
     public Integer getGroupNumber() {
         return groupNumber;
     }
-     
+
     public Double getGradePointAverage() {
         return gradePointAverage;
     }
@@ -102,8 +115,7 @@ public class Student implements Serializable {
         nextId = aNextId;
     }
 
-
-@Override
+    @Override
 
     public int hashCode() {
 
@@ -115,14 +127,11 @@ public class Student implements Serializable {
 
     }
 
- 
-
     @Override
 
     public boolean equals(Object object) {
 
         // TODO: Warning - this method won't work in the case the id fields are not set
-
         if (!(object instanceof Student)) {
 
             return false;
@@ -140,19 +149,5 @@ public class Student implements Serializable {
         return true;
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
