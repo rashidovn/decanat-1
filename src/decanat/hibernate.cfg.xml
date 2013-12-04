@@ -6,5 +6,6 @@
     <property name="hibernate.connection.url">jdbc:sqlite:C:\Users\Roma\Documents\NetBeansProjects/db.db</property>
     <property name="hibernate.connection.username">root</property>
     <property name="hibernate.connection.password">admin</property>
+    <mapping class="decanat.Student" package="decanat.Student.java"/>
   </session-factory>
 </hibernate-configuration>

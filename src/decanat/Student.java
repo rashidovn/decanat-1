@@ -2,24 +2,31 @@ package decanat;
 
 import java.io.Serializable;
 import org.hibernate.mapping.Column;
-import org.hibernate.mapping.Table;
-
-import org.hibernate.*;
 
 
+import org.hibernate.annotations.Table;
+import org.hibernate.annotations.Entity;
+
+@Entity
+@Table(name="student")
 public class Student implements Serializable {
+    @id
+    @Column(name = "ID")
+    private Integer id = 0;
     
-    
+    @Column(name = "LAST_NAME")
     private String lastName = "";
 
-   
+   @Column(name = "FIRST_NAME")
     private String firstName = "";
-    private static Integer nextId = 1;
     
-    private Integer id = 0;
+   @Column(name = "GROUP_NUMBER")
     private Integer groupNumber = 0;
+   
     private Double gradePointAverage = 0.0;
-
+    @Column(name = "GPA")
+    
+    private static Integer nextId = 1;
     public Student(Integer id, String lastName, String firstName, Integer groupNumber, Double gradePointAverage) {
         this.id = id;
         this.lastName = lastName;
@@ -30,24 +37,23 @@ public class Student implements Serializable {
 
     public Student() {
     }
-    @id
-    @Column(name = "ID")
+    
     public Integer getId() {
         return id;
     }
-    @Column(name = "LAST_NAME")
+    
     public String getLastName() {
         return lastName;
     }
-     @Column(name = "FIRST_NAME")
+     
     public String getFirstName() {
         return firstName;
     }
-     @Column(name = "GROUP_NUMBER")
+    
     public Integer getGroupNumber() {
         return groupNumber;
     }
-     @Column(name = "GPA")
+     
     public Double getGradePointAverage() {
         return gradePointAverage;
     }
