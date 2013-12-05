@@ -1,46 +1,27 @@
 package decanat;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Id;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import org.hibernate.annotations.GenericGenerator;
 
-@Entity
-@Table(name = "student")
+@Table(name = "students")
 public class Student implements Serializable {
 
-    @Id
-    @GeneratedValue(generator="increment")
-    @GenericGenerator(name="increment", strategy = "increment")
-    @Column(name = "ID")
-    private Integer id = 0;
-
-    @Column(name = "LAST_NAME")
     private String lastName = "";
 
-    @Column(name = "FIRST_NAME")
     private String firstName = "";
-
-    @Column(name = "GROUP_NUMBER")
+    private static int nextId = 1;
+    private Integer id = 0;
     private Integer groupNumber = 0;
-
-    @Column(name = "GPA")
     private Double gradePointAverage = 0.0;
 
-    private static Integer nextId = 1;
+    public Student() {
+    }
 
-    public Student(Integer id, String lastName, String firstName, Integer groupNumber, Double gradePointAverage) {
+    public Student(Integer id, String lastName, String firstName, Integer groupNumber, double gradePointAverage) {
         this.id = id;
         this.lastName = lastName;
         this.firstName = firstName;
@@ -48,30 +29,35 @@ public class Student implements Serializable {
         this.gradePointAverage = gradePointAverage;
     }
 
-    public Student() {
-    }
-
+    @Id
+    @Column(name = "ID")
     public Integer getId() {
         return id;
     }
 
+    @Column(name = "LAST_NAME")
     public String getLastName() {
         return lastName;
     }
 
+    @Column(name = "FIRST_NAME")
     public String getFirstName() {
         return firstName;
     }
 
+    @Column(name = "GROUP_NUMBER")
+    @ManyToOne(cascade = CascadeType.ALL)
     public Integer getGroupNumber() {
         return groupNumber;
     }
 
+    @Column(name = "GPA")
     public Double getGradePointAverage() {
         return gradePointAverage;
     }
 
     @Override
+
     public String toString() {
         return " ID: " + getId() + ", LastName: " + getLastName() + ", first name: " + getFirstName() + ", Group: " + getGroupNumber() + ", GPA= " + String.format("%4.2f", getGradePointAverage());
     }
@@ -104,14 +90,14 @@ public class Student implements Serializable {
     /**
      * @return the nextId
      */
-    public static Integer getNextId() {
+    public static int getNextId() {
         return nextId;
     }
 
     /**
      * @param aNextId the nextId to set
      */
-    public static void setNextId(Integer aNextId) {
+    public static void setNextId(int aNextId) {
         nextId = aNextId;
     }
 
