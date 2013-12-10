@@ -3,8 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package decanat;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,43 +25,49 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity(name = "JoinTableGroups")
 @Table(name = "GROUPS", uniqueConstraints = {
-@UniqueConstraint(columnNames = "ID"),
-@UniqueConstraint(columnNames = "GROUP_NUMBER")})
+    @UniqueConstraint(columnNames = "ID"),
+    @UniqueConstraint(columnNames = "GROUP_NUMBER")})
 public class Groups implements Serializable {
+
     private static final long serialVersionUID = -1798070786993154676L;
     
+    private Integer id = 0;
+    private Integer groupNumber = 0;
+   
+    
+    
+    private List<Student> students;
+
+    public Groups(Integer id, Integer groupNumber) {
+        this.id = id;
+        this.groupNumber = groupNumber;
+    }
+
+    public Groups() {
+    }
     @Id
     @GeneratedValue
     @Column(name = "ID")
-    private Integer id=0;
-    
-    @Column(name = "GROUP_NUMBER")
-    private Integer groupNumber=0;
-    
-    @OneToMany(mappedBy="groupNumber")
-    private List<Student> students;
-    
-    public Groups (Integer id, Integer groupNumber){
-        this.id=id;
-        this.groupNumber=groupNumber;
-    }
-    public Groups(){
-    }
-        public Integer getId() {
+    public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
     }
-        public Integer getGroupNumber() {
+
+    @Column(name = "GROUP_NUMBER")
+    public Integer getGroupNumber() {
         return groupNumber;
     }
 
     public void setGroupNumber(Integer groupNumber) {
         this.groupNumber = groupNumber;
     }
-
+     
+    @OneToMany(cascade=CascadeType.ALL)
+    @@JoinTable(name="EMPLOYEE_ACCOUNT", joinColumns={@JoinColumn(name="EMPLOYEE_ID", referencedColumnName="ID")}
+    , inverseJoinColumns={@JoinColumn(name="ACCOUNT_ID", referencedColumnName="ID")})
     public List<Student> getStudents() {
         return students;
     }
@@ -69,7 +75,4 @@ public class Groups implements Serializable {
     public void setStudents(List<Student> students) {
         this.students = students;
     }
-    
-
-
 }

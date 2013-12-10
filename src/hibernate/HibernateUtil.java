@@ -13,12 +13,16 @@ package hibernate;
  * @author Roma
  */
 import java.io.File;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;  
 import org.hibernate.cfg.AnnotationConfiguration;  
   
 public class HibernateUtil {  
   
  private static final SessionFactory sessionFactory = buildSessionFactory();  
+ public static final Log logger = LogFactory.getLog(HibernateUtil.class
+      .getName());
   
  private static SessionFactory buildSessionFactory() {  
   try {  
@@ -28,8 +32,8 @@ public class HibernateUtil {
      .buildSessionFactory();  
   
   } catch (Throwable ex) {  
-   System.err.println("Initial SessionFactory creation failed." + ex);  
-   throw new ExceptionInInitializerError(ex);  
+   logger.error("Initial SessionFactory creation failed." + ex);
+      throw new ExceptionInInitializerError(ex);
   }  
  }  
   
