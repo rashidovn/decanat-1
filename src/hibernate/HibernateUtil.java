@@ -13,32 +13,35 @@ package hibernate;
  * @author Roma
  */
 import java.io.File;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.SessionFactory;  
-import org.hibernate.cfg.AnnotationConfiguration;  
-  
-public class HibernateUtil {  
-  
- private static final SessionFactory sessionFactory = buildSessionFactory();  
- public static final Log logger = LogFactory.getLog(HibernateUtil.class
-      .getName());
-  
- private static SessionFactory buildSessionFactory() {  
-  try {  
-   File file = new File("src/hibernate/hibernate.cfg.xml");
-      // Create the SessionFactory from hibernate.cfg.xml  
-   return new AnnotationConfiguration().configure(file)  
-     .buildSessionFactory();  
-  
-  } catch (Throwable ex) {  
-   logger.error("Initial SessionFactory creation failed." + ex);
-      throw new ExceptionInInitializerError(ex);
-  }  
- }  
-  
- public static SessionFactory getSessionFactory() {  
-  return sessionFactory;  
- }  
-}  
+import org.hibernate.HibernateException;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.ServiceRegistryBuilder;
  
+
+ public class HibernateUtil {
+     private static SessionFactory sessionFactory = null;
+     private static ServiceRegistry serviceRegistry;  
+      
+     static {
+         try {
+             File file = new File("src/hibernate/hibernate.cfg.xml");
+             Configuration configuration = new Configuration();
+             configuration = new Configuration().configure(file);
+
+            serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();
+            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+        }
+        catch (HibernateException he)
+        {
+            System.err.println("Error creating Session: " + he);
+            throw new ExceptionInInitializerError(he);
+        }
+    }
+
+    public static SessionFactory getSessionFactory()
+    {
+        return sessionFactory;
+    } 
+}

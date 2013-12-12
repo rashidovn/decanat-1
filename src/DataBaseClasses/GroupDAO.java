@@ -15,7 +15,7 @@ import java.util.Set;
  *
  * @author Roma
  */
-public interface GroupsDAO {
+public interface GroupDAO {
     
      public void insertGroup(Groups group) throws SQLException;
      public void updateGroup(Groups group) throws SQLException;

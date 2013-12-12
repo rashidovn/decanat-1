@@ -10,8 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-@Entity(name = "JoinTableStudent")
-@Table(name ="STUDENT")
+@Entity
+@Table(name ="students")
 public class Student implements Serializable {
     private static final long serialVersionUID = -6790693372846798580L;
     private String lastName = "";
@@ -20,40 +20,39 @@ public class Student implements Serializable {
     private Double gradePointAverage = 0.0;
     private Groups groupNumber=null;
 
-    public Student(Integer id, String lastName, String firstName, Double gradePointAverage, Groups groupNumber) {
-        this.id = id;
-        this.lastName = lastName;
+    public Student(String firstName, String lastName,  Double gradePointAverage ) {
         this.firstName = firstName;
+        this.lastName = lastName;
         this.gradePointAverage = gradePointAverage;
-        this.groupNumber=groupNumber;
+        
     }
    
     public Student() {
     }
     @Id
      @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @Column(name = "student_id")
     public Integer getId() {
         return id;
     }
-    @Column(name = "LAST_NAME")
-    public String getLastName() {
-        return lastName;
-    }
-     @Column(name = "FIRST_NAME")
+     @Column(name = "firstname")
     public String getFirstName() {
         return firstName;
     }
-         
      
+    @Column(name = "lastname")
+    public String getLastName() {
+        return lastName;
+    }
+    
       @ManyToOne
-    @JoinColumn(name="GROUP_NUMBER")
+	@JoinColumn(name="group_id",insertable=false, updatable=false,nullable=false)
     public Groups getgroupNumber() {
         return groupNumber;
     }
      
      
-     @Column(name = "GPA")
+     @Column(name = "gpa")
     public Double getGradePointAverage() {
         return gradePointAverage;
     }
@@ -85,7 +84,9 @@ public class Student implements Serializable {
         this.gradePointAverage = gradePointAverage;
     }
 
-    
+     public void setGroupNumber(Groups groupNumber) {
+        this.groupNumber= groupNumber;
+    }
 
 @Override
 

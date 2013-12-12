@@ -10,6 +10,7 @@ package DataBaseClasses;
  */
 public class Factory {
     private static StudentDAO studentDAO = null;
+    private static GroupDAO groupDAO=null;
        private static Factory instance = null;
 
        public static synchronized Factory getInstance(){
@@ -21,8 +22,14 @@ public class Factory {
 
        public StudentDAO getStudentDAO(){
              if (studentDAO == null){
-               studentDAO = new DAOImplementation();
+               studentDAO = new StudentDAOImpl();
              }
              return studentDAO;
+       }  
+       public GroupDAO getGroupDAO(){
+             if (groupDAO == null){
+               groupDAO = new GroupDAOImpl();
+             }
+             return groupDAO;
        }  
 }

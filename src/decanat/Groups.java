@@ -8,25 +8,26 @@ package decanat;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  *
  * @author roman.romanyuk
  */
-@Entity(name = "JoinTableGroups")
-@Table(name = "GROUPS", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "ID"),
-    @UniqueConstraint(columnNames = "GROUP_NUMBER")})
+@Entity
+@Table(name = "groups")
 public class Groups implements Serializable {
 
     private static final long serialVersionUID = -1798070786993154676L;
@@ -36,7 +37,7 @@ public class Groups implements Serializable {
    
     
     
-    private List<Student> students;
+    private Set<Student> students;
 
     public Groups(Integer id, Integer groupNumber) {
         this.id = id;
@@ -45,9 +46,9 @@ public class Groups implements Serializable {
 
     public Groups() {
     }
-    @Id
-    @GeneratedValue
-    @Column(name = "ID")
+     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "GROUP_ID")
     public Integer getId() {
         return id;
     }
@@ -65,14 +66,14 @@ public class Groups implements Serializable {
         this.groupNumber = groupNumber;
     }
      
-    @OneToMany(cascade=CascadeType.ALL)
-    @@JoinTable(name="EMPLOYEE_ACCOUNT", joinColumns={@JoinColumn(name="EMPLOYEE_ID", referencedColumnName="ID")}
-    , inverseJoinColumns={@JoinColumn(name="ACCOUNT_ID", referencedColumnName="ID")})
-    public List<Student> getStudents() {
+     @OneToMany(cascade={CascadeType.ALL})
+	@JoinColumn(name="group_id")
+	@IndexColumn(name="idx")
+    public Set<Student> getStudents() {
         return students;
     }
 
-    public void setStudents(List<Student> students) {
+    public void setStudents(Set<Student> students) {
         this.students = students;
     }
 }
