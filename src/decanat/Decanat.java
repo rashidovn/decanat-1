@@ -20,11 +20,11 @@ public class Decanat {
     public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException {
     
         
-                DBconnection.openConnection();
-                DBconnection.createTables();
+            //    DBconnection.openConnection();
+              //  DBconnection.createTables();
                 
-                DBconnection.closeConnection();
-                //DBTableCommands.dropDB();
+              //  DBconnection.closeConnection();
+                //DBconnection.dropDB();
         
                 
                 Groups group = new Groups();
@@ -63,9 +63,12 @@ public class Decanat {
     
     
     
-    
+      
+   
     
     
     
     }
+     
+    
 }

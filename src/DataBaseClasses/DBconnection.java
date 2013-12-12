@@ -35,10 +35,10 @@ public class DBconnection {
         try {
             String user = "root";
             String password = "admin";
-            String url = "jdbc:mysql://localhost:3306/decanat?zeroDateTimeBehavior=convertToNull";
+            String url = "jdbc:mysql://localhost:3306/decanat";
             Class.forName("com.mysql.jdbc.Driver");
             if (conn == null) {
-                conn= DriverManager.getConnection(url, user, password);
+                conn = DriverManager.getConnection(url, user, password);
             }
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -58,26 +58,26 @@ public class DBconnection {
         }
     }
 
-   public static synchronized void createTables() {
-        String createTableStudents = "CREATE TABLE IF NOT EXISTS `students` (" +
-"`students_id` INTEGER NOT NULL AUTO_INCREMENT," +
-"`firstname` VARCHAR(50) NULL DEFAULT NULL," +
-"`lastname` VARCHAR(50) NULL DEFAULT NULL," +
-"`gpa` REAL NULL DEFAULT NULL, " +
-"`group_id` INTEGER(20) NULL DEFAULT NULL," +
-"`idx` INT(11) NULL DEFAULT NULL," +
-"PRIMARY KEY (`students_id`)," +
-"INDEX `FK_GROUP` (`group_id`), " +
-"CONSTRAINT `FK_GROUP` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ) " +
-"COLLATE='latin1_swedish_ci'" +
-"ENGINE=InnoDB " +
-"ROW_FORMAT=DEFAULT";
-                //+ " FOREIGN KEY (GROUP_NUMBER) REFERENCES groups (GROUP_ID))";
+    public static synchronized void createTables() {
+        String createTableStudents = " CREATE TABLE IF NOT EXISTS `students` ("
+                + "`student_id` INTEGER NOT NULL AUTO_INCREMENT,"
+                + "`firstname` VARCHAR(50) NULL DEFAULT NULL,"
+                + "`lastname` VARCHAR(50) NULL DEFAULT NULL,"
+                + "`gpa` REAL NULL DEFAULT NULL, "
+                + "`group_id` INTEGER(20) NULL DEFAULT NULL,"
+                + "`idx` INT(11) NULL DEFAULT NULL,"
+                + "PRIMARY KEY (`student_id`),"
+                + "INDEX `FK_GROUP` (`group_id`), "
+                + "CONSTRAINT `FK_GROUP` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ) "
+                + "COLLATE='latin1_swedish_ci'"
+                + "ENGINE=InnoDB "
+                + "ROW_FORMAT=DEFAULT";
+        //+ " FOREIGN KEY (GROUP_NUMBER) REFERENCES groups (GROUP_ID))";
 
         String createTableGroups =
-        "CREATE TABLE IF NOT EXISTS `groups` ( `group_id` INTEGER(20) NOT NULL AUTO_INCREMENT, `group_number` VARCHAR(50) NOT NULL DEFAULT '0',  PRIMARY KEY (`group_id`) ) COLLATE='latin1_swedish_ci' ENGINE=InnoDB " +
-"ROW_FORMAT=DEFAULT";
-               
+                "CREATE TABLE  IF NOT EXISTS `groups` ( `group_id` INTEGER(20) NOT NULL AUTO_INCREMENT, `group_number` INTEGER(50) NOT NULL DEFAULT '0',  PRIMARY KEY (`group_id`) ) COLLATE='latin1_swedish_ci' ENGINE=InnoDB "
+                + "ROW_FORMAT=DEFAULT";
+
 
         Statement stmt = null;
         try {
@@ -88,16 +88,34 @@ public class DBconnection {
 
 
         } catch (SQLException e) {
-             System.out.println("SQLException: " + e.getMessage());
-        System.out.println("SQLState: " + e.getSQLState());
-        System.out.println("VendorError: " + e.getErrorCode());
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
         } finally {
             close(stmt);
         }
     }
-    
-    
-      public static synchronized void close(Statement stmt) {
+
+    public static synchronized void dropDB() {
+        Statement stmt = null;
+        try {
+            stmt = conn().createStatement();
+
+            String sDropTableStudents = "DROP TABLE 'students'";
+            stmt.executeUpdate(sDropTableStudents);
+            String sDropTableGroups = "DROP TABLE 'groups'";
+            stmt.executeUpdate(sDropTableGroups);
+
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            close(stmt);
+        }
+
+    }
+
+    public static synchronized void close(Statement stmt) {
         try {
             if (stmt != null) {
                 stmt.close();
@@ -106,9 +124,7 @@ public class DBconnection {
             Logger.getLogger(DBconnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
-    
+
     /**
      * @return the conn
      */

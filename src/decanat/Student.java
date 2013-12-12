@@ -69,9 +69,8 @@ public class Student implements Serializable {
    public void setId(Integer id) {
         this.id = id;
     }
-    public void setId() {
-        this.id = id;
-    }
+   
+    
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }

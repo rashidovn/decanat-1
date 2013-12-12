@@ -4,8 +4,6 @@ package hibernate;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
 /**
  * Hibernate Utility class with a convenient method to get Session Factory
  * object.
@@ -13,35 +11,36 @@ package hibernate;
  * @author Roma
  */
 import java.io.File;
-import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
+import org.hibernate.cfg.AnnotationConfiguration;
+
+
+public class HibernateUtil {
+
+   
+ private static final SessionFactory sessionFactory = buildSessionFactory();
  
-
- public class HibernateUtil {
-     private static SessionFactory sessionFactory = null;
-     private static ServiceRegistry serviceRegistry;  
-      
-     static {
-         try {
+    private static SessionFactory buildSessionFactory() {
+        try {
              File file = new File("src/hibernate/hibernate.cfg.xml");
-             Configuration configuration = new Configuration();
-             configuration = new Configuration().configure(file);
-
-            serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();
-            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+            // Create the SessionFactory from hibernate.cfg.xml
+            return new AnnotationConfiguration().configure(file).buildSessionFactory();
+ 
         }
-        catch (HibernateException he)
-        {
-            System.err.println("Error creating Session: " + he);
-            throw new ExceptionInInitializerError(he);
+        catch (Throwable ex) {
+            // Make sure you log the exception, as it might be swallowed
+            System.err.println("Initial SessionFactory creation failed." + ex);
+            throw new ExceptionInInitializerError(ex);
         }
     }
-
-    public static SessionFactory getSessionFactory()
-    {
+ 
+    public static SessionFactory getSessionFactory() {
         return sessionFactory;
-    } 
+    }
+ 
+    public static void shutdown() {
+    	// Close caches and connection pools
+    	getSessionFactory().close();
+    }
+ 
 }
